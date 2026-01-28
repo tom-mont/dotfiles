@@ -1,3 +1,11 @@
+-- Format on save
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = "*.py, *.lua",
+  callback = function(args)
+    vim.lsp.buf.format({ async = false })
+  end,
+})
+
 vim.api.nvim_create_autocmd("LspAttach", {
   desc = "LSP actions",
   callback = function(event)
@@ -5,7 +13,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
       mode = mode or "n"
       vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
     end
-    map("gr", require("telescope.builtin").lsp_definitions, "[G]oto [D]efinition")
+    map("gd", require("telescope.builtin").lsp_definitions, "[G]oto [D]efinition")
 
     map("gr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
 
@@ -112,4 +120,58 @@ vim.lsp.config.rust_analyzer = {
     end
   end,
 }
-vim.lsp.enable({ "ruff", "rust_analyzer", "ty" })
+
+-- Python
+vim.lsp.config.ty = {
+  cmd = { "ty", "server" },
+  filetypes = { "python" },
+  root_dir = vim.fs.root(0, { ".git/", "pyproject.toml" }),
+  settings = {
+    ty = {},
+  },
+}
+vim.lsp.config.ruff = {
+  cmd = { "ruff", "server" },
+  filetypes = { "python" },
+  root_dir = vim.fs.root(0, { ".git/", "pyproject.toml" }),
+  settings = {
+    ty = {},
+  },
+}
+
+-- Typescript
+-- Enable TypeScript via the Language Server Protocol (LSP)
+
+-- Set the TS config for the LSP
+vim.lsp.config("tsserver", {
+  -- Make sure this is on your path
+  cmd = { "typescript-language-server", "--stdio" },
+  filetypes = { "typescript", "ts" },
+  -- This is a hint to tell nvim to find your project root from a file within the tree
+  root_dir = vim.fs.root(0, { "package.json", ".git" }),
+  on_attach = on_attach,
+  capabilities = capabilities,
+  -- optional settings = {...} go here, refer to language server code: https://github.com/typescript-language-server/typescript-language-server/blob/5c483349b7b4b6f79d523f8f4d854cbc5cec7ecd/src/ts-protocol.ts#L379
+})
+
+-- Set up prettier for ts and js linting
+-- local status, prettier = pcall(require, "prettier")
+-- if not status then
+--   return
+-- end
+--
+-- prettier.setup({
+--   bin = "prettier",
+--   filetypes = {
+--     "css",
+--     "javascript",
+--     "javascriptreact",
+--     "typescript",
+--     "typescriptreact",
+--     "json",
+--     "scss",
+--     "less",
+--   },
+-- })
+
+vim.lsp.enable({ "ruff", "rust_analyzer", "tsserver", "ty" })

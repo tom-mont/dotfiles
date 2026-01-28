@@ -6,4 +6,5 @@ return {
   { "nvim-treesitter/nvim-treesitter" },
   { "nvim-tree/nvim-web-devicons", opts = {} },
   { "BurntSushi/ripgrep" },
+  { "windwp/nvim-autopairs", enabled = true },
 }

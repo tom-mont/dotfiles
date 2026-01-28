@@ -28,6 +28,13 @@ vim.keymap.set("n", "<C-l>", function()
   harpoon_ui.nav_file(4)
 end, { desc = "Harpoon jump to file 4" })
 
+-- Make ctrl + d do the same thing as enter
+local npairs = require("nvim-autopairs")
+npairs.setup()
+vim.keymap.set("i", "<C-j>", function()
+  return npairs.autopairs_cr()
+end, { expr = true, replace_keycodes = false })
+
 -- See diagnostic of issue from lsp
 vim.keymap.set(
   "n",
@@ -35,3 +42,13 @@ vim.keymap.set(
   vim.diagnostic.open_float,
   { desc = "[d]isplay [d]iagnostic", noremap = true, silent = true }
 )
+
+vim.keymap.set(
+  "n",
+  "<leader>tn",
+  ":split ~/Documents/tom_notes.md <CR>",
+  { desc = "Open tom_notes.md in a horizontal window" }
+)
+
+-- Refresh file for changes to show up (from git, for instance)
+vim.keymap.set("n", "<leader>rf", ":checktime<CR>")
